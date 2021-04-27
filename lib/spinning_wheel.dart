@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:math';
 
-import 'package:flutter/services.dart';
+//import 'package:flutter/services.dart';
 import 'package:flutter_spinning_wheel/flutter_spinning_wheel.dart';
 import 'package:spinning_wheel/roulette_score.dart';
 
@@ -17,15 +17,13 @@ class _FortuneWheelState extends State<FortuneWheel> {
   final _wheelNotifier = StreamController<double>();
 
   @override
-  dispose() {
+  void dispose() {
     super.dispose();
     _dividerController.close();
     _wheelNotifier.close();
   }
 
- 
-
-  @override
+   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(backgroundColor: Color(0xffDDC3FF), elevation: 0.0),
@@ -48,18 +46,27 @@ class _FortuneWheelState extends State<FortuneWheel> {
                   Image.asset('assets/images/roulette-center-300.png'),
               secondaryImageHeight: 110,
               secondaryImageWidth: 110,
+              shouldStartOrStop: _wheelNotifier.stream,
             ),
             SizedBox(height: 30),
             StreamBuilder(
               stream: _dividerController.stream,
               builder: (context, snapshot) =>
                   snapshot.hasData ? RouletteScore(snapshot.data) : Container(),
+            ),
+            SizedBox(height: 30),
+            new RaisedButton(
+              child: new Text("Start"),
+              onPressed: () =>
+                  _wheelNotifier.sink.add(_generateRandomVelocity()),
             )
           ],
         ),
       ),
     );
   }
+
+  double _generateRandomVelocity() => (Random().nextDouble() * 6000) + 2000;
 
   double _generateRandomAngle() => Random().nextDouble() * pi * 2;
 }
